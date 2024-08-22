@@ -1,25 +1,15 @@
-import { MongoClient } from 'mongodb';
+import mongoose from 'mongoose';
 
-const url = 'mongodb://localhost:27017';
-const dbName = 'myProject';
-let db;
+const url = 'mongodb://localhost:27017/myProject';
 
 export const connectDb = async () => {
   try {
-    const client = new MongoClient(url);
-
-    await client.connect();
-    console.log('Connected successfully to DB');
-    db = client.db(dbName);
+    const conn = await mongoose.connect(url);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error('Could not connect to the database', error);
-    throw error;
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
   }
 };
 
-export const getDb = () => {
-  if (!db) {
-    throw new Error('Database not initialized. Call connectDb first.');
-  }
-  return db;
-};
+

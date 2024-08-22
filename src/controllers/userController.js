@@ -1,53 +1,38 @@
-import { getDb } from '../config/db.js';
-import { ObjectId } from 'mongodb';
+import User from '../models/User.js';
 
-const createUser = async (req, res) => {
-    try {
-        const db = getDb();
-        const result = await db.collection('users').insertOne(req.body);
-        res.status(201).json(result);
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ error: error.message });
-    }
+export const createUser = async (req, res) => {
+  try {
+    const user = new User(req.body);
+    const savedUser = await user.save();
+    res.status(201).json(savedUser);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 
-const getUsers = async (req, res) => {
-    try {
-        const db = getDb();
-        const users = await db.collection('users').find({}).toArray();
-        res.status(200).json(users);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+export const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 
-const updateUser = async (req, res) => {
-    try {
-        const db = getDb();
-        const { id } = req.params;
-        const result = await db.collection('users').updateOne({ _id: new ObjectId(id) }, { $set: req.body });
-        res.status(200).json(result);
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ error: error.message });
-    }
+export const updateUser = async (req, res) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 
-const deleteUser = async (req, res) => {
-    try {
-        const db = getDb();
-        const { id } = req.params;
-        const result = await db.collection('users').deleteOne({ _id: new ObjectId(id) });
-        res.status(200).json(result);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+export const deleteUser = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
-
-export {
-    createUser,
-    getUsers, 
-    updateUser,
-    deleteUser,
-}
