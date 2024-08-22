@@ -1,25 +1,23 @@
-import { MongoClient } from 'mongodb';
+import pg from 'pg';
+const { Pool } = pg;
 
-const url = 'mongodb://localhost:27017';
-const dbName = 'myProject';
-let db;
+const pool = new Pool({
+  user: 'postgres',     
+  host: 'localhost',
+  database: 'myproject',    
+  password: 'admin123',  
+  port: 5432,     
+});
 
-export const connectDb = async () => {
+const connectDb = async () => {
   try {
-    const client = new MongoClient(url);
-
-    await client.connect();
-    console.log('Connected successfully to DB');
-    db = client.db(dbName);
+    await pool.connect();
+    console.log('Connected to PostgreSQL Database');
   } catch (error) {
-    console.error('Could not connect to the database', error);
+    console.error('Database connection error:', error.message);
     throw error;
   }
 };
 
-export const getDb = () => {
-  if (!db) {
-    throw new Error('Database not initialized. Call connectDb first.');
-  }
-  return db;
-};
+export default pool;
+export { connectDb };

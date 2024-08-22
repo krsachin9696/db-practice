@@ -11,15 +11,16 @@ app.use(express.urlencoded({ extended: false }));
 // Routes
 app.use('/api/users', userRoutes);
 
-const server = async () => {
-    try {
-        await connectDb();
-        app.listen(3000, () => {
-            console.log('Server is running on PORT: 3000');
-          });
-    } catch (error) {
-        console.log(error);
-    }
-}
 
-server();
+const startServer = async () => {
+  try {
+    await connectDb();
+    app.listen(3000, () => {
+      console.log('Server is running on PORT: 3000');
+    });
+  } catch (error) {
+    console.error('Failed to start the server:', error.message);
+  }
+};
+
+startServer();
